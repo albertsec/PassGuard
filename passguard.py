@@ -76,6 +76,23 @@ def get_strength(score):
         return "Strong"
 
 
+def load_common_passwords():
+    with open("common_passwords.txt", "r", encoding="utf-8") as file:
+        passwords = set()
+
+        for line in file:
+            password = line.strip().lower()
+
+            if password:
+                passwords.add(password)
+
+    return passwords
+
+
+def is_common_password(pw, common_passwords):
+    return pw.lower() in common_passwords
+
+
 def get_tips(pw):
     tips = []
 
@@ -96,16 +113,29 @@ def get_tips(pw):
 
     return tips
 
+
+common_passwords = load_common_passwords()
+
 password = getpass("\nEnter your password: ")
 
 score = calculate_score(password)
+
+is_common = is_common_password(password, common_passwords)
+
+if is_common:
+    strength = "Weak"
+else:
+    strength = get_strength(score)
 
 print("\n================================")
 print("       PASSWORD REPORT")
 print("================================")
 
 print("Score:", score, "/ 6")
-print("Strength:", get_strength(score))
+print("Strength:", strength)
+
+if is_common:
+    print("WARNING: This is a common password!")
 
 print("\nTips:")
 
@@ -116,3 +146,4 @@ if tips:
         print("-", tip)
 else:
     print("No improvements needed!")
+
